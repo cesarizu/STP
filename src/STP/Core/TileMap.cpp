@@ -61,7 +61,9 @@ TileMap::TileMap(MapOrientation orientation,
 TileSet* TileMap::GetTileSet(unsigned int gid) {
     if (gid == 0) return nullptr;
     for (auto tileset: tilesets_){
-        if (tileset->GetFirstGID() <= gid) {
+        unsigned int first_gid = tileset->GetFirstGID();
+        unsigned int last_gid = first_gid + tileset->GetTileCount() - 1;
+        if (first_gid <= gid && gid <= last_gid) {
             return tileset.get();
         }
     }

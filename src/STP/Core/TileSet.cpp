@@ -115,4 +115,8 @@ unsigned int TileSet::GetFirstGID() const {
     return firstgid_;
 }
 
+unsigned int TileSet::GetTileCount() const {
+    return tilecount_;
+}
+
 }  // namespace tmx

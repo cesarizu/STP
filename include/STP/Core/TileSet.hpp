@@ -138,6 +138,14 @@ public:
     ////////////////////////////////////////////////////////////
     unsigned int GetFirstGID() const;
 
+    ////////////////////////////////////////////////////////////
+    /// @brief Returns the number of tiles in this tileset
+    ///
+    /// @return The number of tiles in this tileset
+    ///
+    ////////////////////////////////////////////////////////////
+    unsigned int GetTileCount() const;
+
 private:
     friend class Parser;
 
