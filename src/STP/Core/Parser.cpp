@@ -355,8 +355,6 @@ Layer Parser::ParseLayer(xml_node& layer_node, TileMap& tilemap) {
             Tile tile_cpy;
             TileSet* tileset = tilemap.GetTileSet(gid);
             if (tileset != nullptr) {
-                tile_pos.x += tileset->GetTileOffSet().x;
-                tile_pos.y += tileset->GetTileOffSet().y;
                 tile_cpy = tileset->GetTile(gid - tileset->GetFirstGID());
 
                 if (tilemap.GetOrientation() != MapOrientation::ORTHOGONAL) {
@@ -367,14 +365,19 @@ Layer Parser::ParseLayer(xml_node& layer_node, TileMap& tilemap) {
                         tile_pos.x = (x - y) * tilewidth * 0.5f;
                         tile_pos.y = (x + y) * tileheight * 0.5f;
                     } else if (tilemap.GetOrientation() == MapOrientation::STAGGERED) {
-                        if (y % 2 == 0) {
-                            tile_pos.x = static_cast<float>(x * tilewidth);
-                        } else {
-                            tile_pos.x = static_cast<float>(x * tilewidth + tilewidth / 2.f);
+                        tile_pos.x = static_cast<float>((x + (y & 1) * 0.5f) * tilewidth);
+                        tile_pos.y = static_cast<float>(y * tileheight * 0.5f);
+                    } else if (tilemap.GetOrientation() == MapOrientation::HEXAGONAL) {
+                        tile_pos.x = static_cast<float>((x + (y & 1) * 0.5f) * tilewidth);
+                        tile_pos.y = static_cast<float>(y * tileheight * 0.75f);
+                    }
                 }
-                        tile_pos.y = static_cast<float>(y * tileheight / 2.f);
-            }
-                }
+
+                tile_pos.x += tileset->GetTileOffSet().x;
+                tile_pos.y += tileset->GetTileOffSet().y;
+
+                // Tiles are drawn aligned on the base vertically up
+                tile_pos.y -= tileset->GetTileHeight() - tileheight;
             }
 
             tile_cpy.SetPosition(tile_pos);
@@ -383,10 +386,10 @@ Layer Parser::ParseLayer(xml_node& layer_node, TileMap& tilemap) {
 
             layer.tiles_.push_back(std::move(tile_cpy));
 
-                count_x = (count_x + 1) % width;
-                if (count_x == 0) count_y += 1;
-            }
+            count_x = (count_x + 1) % width;
+            if (count_x == 0) count_y += 1;
         }
+    }
 
     return layer;
 }
