@@ -48,16 +48,20 @@ endif()
 ###############################################################################
 # Compiler configuration
 
-# If compiler is GNU GCC based it enable the warnings
-if(CMAKE_COMPILER_IS_GNUCXX)
-    add_definitions("-Wall")
-endif()
-
 # Adding C++11 support in GCC compiler and Clang compiler
 if(${COMPILER} STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
+    if(${OS} STREQUAL "Linux")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -stdlib=libstdc++")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -stdlib=libc++")
+    endif()
 elseif(${COMPILER} STREQUAL "GCC")
-    set(CMAKE_CXX_FLAGS "-std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+endif()
+
+# If compiler is GNU GCC or Clang enable the warnings
+if(${COMPILER} STREQUAL "GCC" OR ${COMPILER} STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 endif()
 
 ###############################################################################
@@ -88,7 +92,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_PROFILE "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_PROFILE "${CMAKE_BINARY_DIR}/bin")
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
 
-set(DEPENDENCIES_DIR "${CMAKE_SOURCE_DIR}/extlibs")
+set(DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extlibs")
 set(TEMP_DIR "${CMAKE_BINARY_DIR}/obj")
 
 ###############################################################################

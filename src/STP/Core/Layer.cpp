@@ -27,6 +27,7 @@
 #include "STP/Core/Layer.hpp"
 #include "STP/Core/TileMap.hpp"
 
+#include <cstdio>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -84,7 +85,7 @@ void Layer::SetOpacity(float opacity) {
     }
 }
 
-void Layer::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+void Layer::draw(sf::RenderTarget& target, sf::RenderStates /* states */) const {
     if (visible) {
         for (unsigned int i = 0; i < tiles_.size(); ++i)
             target.draw(tiles_[i]);
