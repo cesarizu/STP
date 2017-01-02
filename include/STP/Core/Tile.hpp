@@ -151,6 +151,7 @@ public:
     sf::Vertex vertices_[4];
     std::shared_ptr<Properties> properties_; // shared_ptr
     const sf::Texture* texture_;
+    unsigned int flags_ = 0;
 
 public:
     /// @brief Visibility of the Tile

@@ -69,8 +69,10 @@ void Tile::SetPosition(const sf::Vector2f& pos) {
 }
 
 Tile& Tile::Flip(unsigned int flags) {
+    flags_ = flags;
     if (flags & TileFlip::FLIP_DIAGONAL) {
         std::swap(vertices_[1].texCoords, vertices_[3].texCoords);
+        SetPosition(vertices_[0].position);
     }
     if (flags & TileFlip::FLIP_HORIZONTAL) {
         std::swap(vertices_[0].texCoords, vertices_[1].texCoords);
@@ -84,10 +86,17 @@ Tile& Tile::Flip(unsigned int flags) {
 }
 
 sf::Vector2f Tile::GetSize() const {
-    return sf::Vector2f(
-        std::abs(vertices_[1].texCoords.x - vertices_[0].texCoords.x),
-        std::abs(vertices_[2].texCoords.y - vertices_[0].texCoords.y)
-    );
+    if (flags_ & TileFlip::FLIP_DIAGONAL) {
+        return sf::Vector2f(
+            std::abs(vertices_[1].texCoords.y - vertices_[0].texCoords.x),
+            std::abs(vertices_[2].texCoords.x - vertices_[0].texCoords.y)
+        );
+    } else {
+        return sf::Vector2f(
+            std::abs(vertices_[1].texCoords.x - vertices_[0].texCoords.x),
+            std::abs(vertices_[2].texCoords.y - vertices_[0].texCoords.y)
+        );
+    }
 }
 
 const sf::Texture* Tile::GetTexture() const {
