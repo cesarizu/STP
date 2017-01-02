@@ -53,13 +53,10 @@ public:
     ////////////////////////////////////////////////////////////
     TileSet();
 
-    ////////////////////////////////////////////////////////////
-    /// @brief Copy constructor
-    ///
-    ////////////////////////////////////////////////////////////
-    TileSet(const TileSet& other);
-
 private:
+    // TODO: implement TileSet copying correctly
+    TileSet(const TileSet& other) = delete;
+
     ////////////////////////////////////////////////////////////
     /// @brief Constructs a tileset
     ///
@@ -67,14 +64,13 @@ private:
     /// @param name       The name of the tileset in tiles
     /// @param tilewidth  The width of the tiles in pixels
     /// @param tileheight The height of the tiles in pixels
-    /// @param image      The tmx::Image attached to it
     /// @param spacing    The spacing in pixels between the tiles
     /// @param margin     The margin around the tiles
     /// @param tileoffset Offset in pixels, to be applied when drawing a tile from the related tileset
     ///
     ////////////////////////////////////////////////////////////
     TileSet(unsigned int firstgid, const std::string& name, unsigned int tilewidth,
-            unsigned int tileheight, Image image, unsigned int spacing = 0,
+            unsigned int tileheight, unsigned int spacing = 0,
             unsigned int margin = 0, sf::Vector2i tileoffset = {0, 0});
 
 public:
@@ -89,14 +85,6 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     Tile& GetTile(unsigned int id);
-
-    ////////////////////////////////////////////////////////////
-    /// @brief Returns the texture attached to the tileset
-    ///
-    /// @return Pointer to a constant sf::Texture
-    ///
-    ////////////////////////////////////////////////////////////
-    const sf::Texture* GetTexture() const;
 
     ////////////////////////////////////////////////////////////
     /// @brief Returns the tile offset
@@ -149,6 +137,8 @@ public:
 private:
     friend class Parser;
 
+    void CreateTilesForImage();
+
     unsigned int firstgid_;
     std::string name_;
     unsigned int tilewidth_;
@@ -158,9 +148,9 @@ private:
     unsigned int tilecount_;
     unsigned int columns_;
     unsigned int rows_;
-    Image image_;
     sf::Vector2i tileoffset_;
 
+    std::vector<Image> images_;
     std::vector<Tile> tiles_;
 };
 

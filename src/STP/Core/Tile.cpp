@@ -40,23 +40,18 @@ Tile::Tile() :
         texture_(nullptr) {
 }
 
-Tile::Tile(sf::Vector2f tile_pos, sf::Vector2f texture_pos, sf::Vector2f tile_size, TileSet* tileset) :
-        properties_(std::make_shared<Properties>()),
-        texture_(nullptr),
-        visible(true) {
-    if (tileset) {
-        texture_ = tileset->GetTexture();
-    }
+Tile::Tile(const sf::Texture* texture, sf::Vector2f texture_pos, sf::Vector2f tile_size) :
+    properties_(std::make_shared<Properties>()),
+    texture_(texture),
+    visible(true) {
+    SetupCoords(texture_pos, tile_size);
+}
 
-    vertices_[0].texCoords = sf::Vector2f(texture_pos.x, texture_pos.y);
-    vertices_[1].texCoords = sf::Vector2f(texture_pos.x + tile_size.x, texture_pos.y);
-    vertices_[2].texCoords = sf::Vector2f(texture_pos.x + tile_size.x, texture_pos.y + tile_size.y);
-    vertices_[3].texCoords = sf::Vector2f(texture_pos.x, texture_pos.y + tile_size.y);
-
-    vertices_[0].position = sf::Vector2f(tile_pos.x, tile_pos.y);
-    vertices_[1].position = sf::Vector2f(tile_pos.x + tile_size.x, tile_pos.y);
-    vertices_[2].position = sf::Vector2f(tile_pos.x + tile_size.x, tile_pos.y + tile_size.y);
-    vertices_[3].position = sf::Vector2f(tile_pos.x, tile_pos.y + tile_size.y);
+Tile::Tile(const Image& image) :
+    properties_(std::make_shared<Properties>()),
+    texture_(image.GetTexture()),
+    visible(true) {
+    SetupCoords(sf::Vector2f(0.f, 0.f), sf::Vector2f(image.GetWidth(), image.GetHeight()));
 }
 
 bool Tile::empty() const {
@@ -112,6 +107,16 @@ void Tile::AddProperty(const std::string& name, const std::string& value) {
 
 std::string& Tile::GetPropertyValue(const std::string& name) {
     return properties_->GetPropertyValue(name);
+}
+
+void Tile::SetupCoords(sf::Vector2f texture_pos, sf::Vector2f tile_size)
+{
+    vertices_[0].texCoords = sf::Vector2f(texture_pos.x, texture_pos.y);
+    vertices_[1].texCoords = sf::Vector2f(texture_pos.x + tile_size.x, texture_pos.y);
+    vertices_[2].texCoords = sf::Vector2f(texture_pos.x + tile_size.x, texture_pos.y + tile_size.y);
+    vertices_[3].texCoords = sf::Vector2f(texture_pos.x, texture_pos.y + tile_size.y);
+
+    SetPosition(sf::Vector2f(0.f, 0.f));
 }
 
 void Tile::draw(sf::RenderTarget& target, sf::RenderStates states) const {

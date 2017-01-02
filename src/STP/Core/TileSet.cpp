@@ -42,23 +42,8 @@ TileSet::TileSet() :
         tileoffset_(0, 0) {
 }
 
-TileSet::TileSet(const TileSet & other) :
-        firstgid_(other.firstgid_),
-        name_(other.name_),
-        tilewidth_(other.tilewidth_),
-        tileheight_(other.tileheight_),
-        spacing_(other.spacing_),
-        margin_(other.margin_),
-        image_(other.image_),
-        tileoffset_(other.tileoffset_),
-        tiles_(other.tiles_) {
-    for (auto& tile : tiles_) {
-        tile.texture_ = image_.GetTexture();
-    }
-}
-
 TileSet::TileSet(unsigned int firstgid, const std::string& name, unsigned int tilewidth,
-                 unsigned int tileheight, Image image, unsigned int spacing,
+                 unsigned int tileheight, unsigned int spacing,
                  unsigned int margin, sf::Vector2i tileoffset) :
         firstgid_(firstgid),
         name_(name),
@@ -66,20 +51,7 @@ TileSet::TileSet(unsigned int firstgid, const std::string& name, unsigned int ti
         tileheight_(tileheight),
         spacing_(spacing),
         margin_(margin),
-        image_(image),
         tileoffset_(tileoffset) {
-    columns_ = (image_.GetWidth() - (margin_ * 2) + spacing_) / (tilewidth_ + spacing_);
-    unsigned int rows = (image_.GetHeight() - (margin_ * 2) + spacing_) / (tileheight_ + spacing_);
-    // Add each tile to the TileSet
-    tilecount_ = columns_ * rows;
-    sf::Vector2f texture_pos;
-    tiles_.reserve(tilecount_);
-    for (unsigned int i = 0; i < tilecount_; ++i) {
-        texture_pos.x = static_cast<float>((i % columns_) * (tilewidth_ + spacing_) + margin_);
-        texture_pos.y = static_cast<float>((i / columns_) * (tileheight_ + spacing_) + margin_);
-
-        tiles_.emplace_back(sf::Vector2f(0.f, 0.f), sf::Vector2f(texture_pos), sf::Vector2f(tilewidth_, tileheight_), this);
-    }
 }
 
 Tile& TileSet::GetTile(unsigned int id) {
@@ -89,10 +61,6 @@ Tile& TileSet::GetTile(unsigned int id) {
         throw std::out_of_range(error);
     }
     return tiles_[id];
-}
-
-const sf::Texture* TileSet::GetTexture() const {
-    return image_.GetTexture();
 }
 
 const std::string& TileSet::GetName() const {
@@ -117,6 +85,23 @@ unsigned int TileSet::GetFirstGID() const {
 
 unsigned int TileSet::GetTileCount() const {
     return tilecount_;
+}
+
+void TileSet::CreateTilesForImage() {
+    Image& image = images_[0];
+    columns_ = (image.GetWidth() - (margin_ * 2) + spacing_) / (tilewidth_ + spacing_);
+    unsigned int rows = (image.GetHeight() - (margin_ * 2) + spacing_) / (tileheight_ + spacing_);
+    const sf::Texture* texture = image.GetTexture();
+    // Add each tile to the TileSet
+    tilecount_ = columns_ * rows;
+    sf::Vector2f texture_pos;
+    tiles_.reserve(tilecount_);
+    for (unsigned int i = 0; i < tilecount_; ++i) {
+        texture_pos.x = static_cast<float>((i % columns_) * (tilewidth_ + spacing_) + margin_);
+        texture_pos.y = static_cast<float>((i / columns_) * (tileheight_ + spacing_) + margin_);
+
+        tiles_.emplace_back(texture, texture_pos, sf::Vector2f(tilewidth_, tileheight_));
+    }
 }
 
 }  // namespace tmx

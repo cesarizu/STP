@@ -72,10 +72,9 @@ public:
     ParserStatus Load(const char* buffer, size_t size);
 
     ////////////////////////////////////////////////////////////
-    /// @brief Load a Tiled map from memory
+    /// @brief Load a Tiled map from a file
     ///
-    /// @param buffer The buffer that stores the map
-    /// @param size   The size of the buffer
+    /// @param tmx_file A tmx file
     ///
     /// @return The loading status.
     ///

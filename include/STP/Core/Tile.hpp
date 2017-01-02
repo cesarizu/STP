@@ -34,6 +34,7 @@
 #include "SFML/Graphics/Drawable.hpp"
 
 #include "STP/Config.hpp"
+#include "STP/Core/Image.hpp"
 #include "STP/Core/Properties.hpp"
 
 namespace tmx {
@@ -57,15 +58,22 @@ public:
     Tile();
 
     ////////////////////////////////////////////////////////////
-    /// @brief Constructor that receives the gid, tile_rect and a pointer to the tileset
+    /// @brief Constructor that receives coordinates and a texture.
     ///
-    /// @param gid       The global id of the tmx::TileSet::Tile attached.
-    /// @param tile_rect The global bounds of the tile.
-    /// @param tileset   A pointer to a tmx::TileSet to get the texture.
+    /// @param texture     A pointer to a sf::Texture.
+    /// @param texture_pos The position of the coordinates of the tile in the texture.
+    /// @param tile_rect   The size of the tile in the texture.
     ///
     ////////////////////////////////////////////////////////////
-    Tile(sf::Vector2f tile_pos, sf::Vector2f texture_pos = { 0.f, 0.f },
-         sf::Vector2f tile_size = {0.f, 0.f}, TileSet* tileset = nullptr);
+    Tile(const sf::Texture* texture, sf::Vector2f texture_pos, sf::Vector2f tile_size);
+
+    ////////////////////////////////////////////////////////////
+    /// @brief Constructor that receives an image used to get a texture and coordinates.
+    ///
+    /// @param image A tmx::Image to use as source of the texture.
+    ///
+    ////////////////////////////////////////////////////////////
+    Tile(const Image& image);
 
 public:
     ////////////////////////////////////////////////////////////
@@ -132,6 +140,7 @@ public:
     std::string& GetPropertyValue(const std::string& name);
 
 private:
+    void SetupCoords(sf::Vector2f texture_pos, sf::Vector2f tile_size);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 public:

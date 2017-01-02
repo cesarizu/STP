@@ -253,11 +253,33 @@ std::shared_ptr<TileSet> Parser::ParseTileSet(xml_node& tileset_node, TileMap& t
     // Create the new TileSet
     std::shared_ptr<TileSet> tileset(new TileSet(
         firstgid, name, tilewidth, tileheight,
-        image_data, spacing, margin, tileoffset_data
+        spacing, margin, tileoffset_data
     ));
 
+    const auto& children_tiles = tileset_node_.children("tile");
+
+    if (image_data.source_.empty()) {
+        // Create tiles from nodes images
+        unsigned int n = std::distance(children_tiles.begin(), children_tiles.end());
+        tileset->tilecount_ = n;
+        tileset->images_.reserve(n);
+        tileset->tiles_.reserve(n);
+        for (xml_node& tile_node : children_tiles) {
+            xml_node image_node = tile_node.child("image");
+            // TODO the nodes have an id, that *might* be not in order
+            // Creating objects here just like this may not result in the order expected
+            tileset->images_.push_back(ParseImage(image_node));
+            tileset->tiles_.emplace_back(tileset->images_.back());
+        }
+    } else {
+        // Create tiles from a single tileset image
+        tileset->images_.reserve(1);
+        tileset->images_.push_back(image_data);
+        tileset->CreateTilesForImage();
+    }
+
     // Parse each tile property
-    for (xml_node& tile_node : tileset_node_.children("tile")) {
+    for (xml_node& tile_node : children_tiles) {
         unsigned int id = tile_node.attribute("id").as_uint();
         ParseProperties(tile_node, tileset->GetTile(id).properties_.get());
     }
