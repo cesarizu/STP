@@ -140,6 +140,7 @@ public:
     std::string& GetPropertyValue(const std::string& name);
 
 private:
+    void FixPosition();
     void SetupCoords(sf::Vector2f texture_pos, sf::Vector2f tile_size);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
@@ -148,6 +149,7 @@ public:
     friend Layer;
     friend Parser;
 
+    sf::Vector2f position_;
     sf::Vertex vertices_[4];
     std::shared_ptr<Properties> properties_; // shared_ptr
     const sf::Texture* texture_;

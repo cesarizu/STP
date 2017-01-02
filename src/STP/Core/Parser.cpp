@@ -395,16 +395,17 @@ Layer Parser::ParseLayer(xml_node& layer_node, TileMap& tilemap) {
                     }
                 }
 
-                tile_pos.x += tileset->GetTileOffSet().x;
-                tile_pos.y += tileset->GetTileOffSet().y;
+                tile_pos.x += offsetx;
+                tile_pos.y += offsety;
 
                 // Tiles are drawn aligned on the base vertically up
-                tile_pos.y -= tileset->GetTileHeight() - tileheight;
+                tile_pos.y += tileheight;
+
+                tile_cpy.SetPosition(tile_pos);
+                tile_cpy.Flip(flip_flag);
             }
 
-            tile_cpy.SetPosition(tile_pos);
             tile_cpy.SetColor(layer.color_);
-            tile_cpy.Flip(flip_flag);
 
             layer.tiles_.push_back(std::move(tile_cpy));
 

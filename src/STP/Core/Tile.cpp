@@ -60,19 +60,23 @@ bool Tile::empty() const {
 }
 
 void Tile::SetPosition(const sf::Vector2f& pos) {
+    position_ = pos;
+    FixPosition();
+}
+
+void Tile::FixPosition() {
     sf::Vector2f tile_size = GetSize();
 
-    vertices_[0].position = sf::Vector2f(pos.x, pos.y);
-    vertices_[1].position = sf::Vector2f(pos.x + tile_size.x, pos.y);
-    vertices_[2].position = sf::Vector2f(pos.x + tile_size.x, pos.y + tile_size.y);
-    vertices_[3].position = sf::Vector2f(pos.x, pos.y + tile_size.y);
+    vertices_[0].position = position_ - sf::Vector2f(0, tile_size.y);
+    vertices_[1].position = vertices_[0].position + sf::Vector2f(tile_size.x, 0);
+    vertices_[2].position = vertices_[0].position + tile_size;
+    vertices_[3].position = vertices_[0].position + sf::Vector2f(0, tile_size.y);
 }
 
 Tile& Tile::Flip(unsigned int flags) {
     flags_ = flags;
     if (flags & TileFlip::FLIP_DIAGONAL) {
         std::swap(vertices_[1].texCoords, vertices_[3].texCoords);
-        SetPosition(vertices_[0].position);
     }
     if (flags & TileFlip::FLIP_HORIZONTAL) {
         std::swap(vertices_[0].texCoords, vertices_[1].texCoords);
@@ -82,14 +86,15 @@ Tile& Tile::Flip(unsigned int flags) {
         std::swap(vertices_[0].texCoords, vertices_[3].texCoords);
         std::swap(vertices_[1].texCoords, vertices_[2].texCoords);
     }
+    FixPosition();
     return *this;
 }
 
 sf::Vector2f Tile::GetSize() const {
     if (flags_ & TileFlip::FLIP_DIAGONAL) {
         return sf::Vector2f(
-            std::abs(vertices_[1].texCoords.y - vertices_[0].texCoords.x),
-            std::abs(vertices_[2].texCoords.x - vertices_[0].texCoords.y)
+            std::abs(vertices_[1].texCoords.y - vertices_[0].texCoords.y),
+            std::abs(vertices_[2].texCoords.x - vertices_[0].texCoords.x)
         );
     } else {
         return sf::Vector2f(
